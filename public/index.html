@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taped</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="tape">Taped</span>
+      <span class="tagline">typing practice that finds your weak keys</span>
+    </div>
+    <nav class="main" id="mainNav" aria-label="Sections">
+      <button type="button" data-view="type" aria-current="page">Type</button>
+      <button type="button" data-view="stats">Stats</button>
+      <button type="button" data-view="community">Community</button>
+      <button type="button" data-view="host" id="navHost" hidden>Host</button>
+    </nav>
+    <div class="tools">
+      <div class="pop-wrap">
+        <button type="button" class="icon-btn" id="bellBtn" aria-label="Notifications" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span class="badge" id="bellBadge" hidden>0</span>
+        </button>
+        <div class="pop" id="bellPop" hidden></div>
+      </div>
+      <button type="button" class="icon-btn" id="themeBtn" aria-label="Switch theme">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
+      </button>
+      <div class="pop-wrap">
+        <button type="button" class="icon-btn" id="acctBtn" aria-expanded="false"><span id="acctLabel">Sign in</span></button>
+        <div class="pop" id="acctPop" hidden></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- TYPE VIEW -->
+  <section id="viewType">
+    <div id="testArea">
+      <div class="modebar">
+        <div class="seg" id="modeSeg" role="group" aria-label="Test mode">
+          <button type="button" data-mode="time" aria-pressed="true">Time</button>
+          <button type="button" data-mode="words" aria-pressed="false">Words</button>
+          <button type="button" data-mode="quote" aria-pressed="false">Quote</button>
+          <button type="button" data-mode="weak" aria-pressed="false">Weak keys</button>
+        </div>
+        <div class="chips" id="chips"></div>
+        <div class="hint" id="modeHint"></div>
+      </div>
+
+      <div class="live" id="live">
+        <div><div class="n" id="liveTime">30</div><div class="l">time</div></div>
+        <div><div class="n" id="liveWpm">0</div><div class="l">wpm</div></div>
+        <div><div class="n" id="liveAcc">100%</div><div class="l">accuracy</div></div>
+      </div>
+
+      <div id="card">
+        <div id="textDisplay"><div id="words"></div></div>
+        <div id="focusMsg">Click here or press any key to start</div>
+        <input id="hiddenInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Typing input">
+      </div>
+      <div class="restart"><button type="button" id="restartBtn" aria-label="Restart test"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button></div>
+    </div>
+
+    <div id="results" hidden>
+      <div class="panel">
+        <div class="hero">
+          <div class="big"><div class="n" id="rWpm">0</div><div class="l">words per minute</div></div>
+          <div class="big"><div class="n acc" id="rAcc">0%</div><div class="l">accuracy</div></div>
+          <div class="minis">
+            <div class="mini"><div class="n" id="rRaw">0</div><div class="l">raw wpm</div></div>
+            <div class="mini"><div class="n" id="rCons">0%</div><div class="l">consistency</div></div>
+            <div class="mini"><div class="n" id="rErr">0</div><div class="l">mistyped keys</div></div>
+            <div class="mini"><div class="n" id="rTime">0s</div><div class="l">time</div></div>
+          </div>
+        </div>
+        <div id="rPb" class="pb" hidden>New personal best</div>
+        <p class="sub" id="saveNote" style="margin:10px 0 0"></p>
+      </div>
+
+      <div class="panel">
+        <h3>Speed over time</h3>
+        <svg id="graph" class="graph" viewBox="0 0 640 230" role="img" aria-label="Speed over time"></svg>
+        <div class="legend">
+          <span><i style="background:var(--accent)"></i>net wpm, running</span>
+          <span><i style="background:var(--warn)"></i>raw wpm, each second</span>
+          <span><i style="background:var(--err);height:8px;width:8px;border-radius:50%"></i>second with a mistyped key</span>
+        </div>
+      </div>
+
+      <div class="cols">
+        <div class="panel">
+          <h3>Characters</h3>
+          <dl class="kv" id="rChars"></dl>
+          <p class="sub" style="margin:12px 0 0">Accuracy counts every key you press, including ones you later fix.</p>
+        </div>
+        <div class="panel">
+          <h3>Keys that slipped this test</h3>
+          <div class="keychips" id="rKeys"></div>
+          <h3 style="margin-top:18px">Words you got wrong</h3>
+          <ul class="pairs" id="rWords"></ul>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:18px">
+        <button type="button" class="btn primary" id="againBtn">Try again</button>
+        <button type="button" class="btn" id="practiceBtn">Practice weak keys</button>
+        <button type="button" class="btn" id="shareBtn">Comment on this run</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS VIEW -->
+  <section id="viewStats" hidden>
+    <div class="panel">
+      <h3>Overview</h3>
+      <div class="grid-cells" id="sOverview"></div>
+    </div>
+    <div class="panel">
+      <h3>Personal bests, timed</h3>
+      <div class="grid-cells" id="sBestTime"></div>
+    </div>
+    <div class="panel">
+      <h3>Personal bests, word count</h3>
+      <div class="grid-cells" id="sBestWords"></div>
+    </div>
+    <div class="panel">
+      <h3>Last 20 tests</h3>
+      <p class="sub" id="sBarsNote">Net wpm, oldest on the left.</p>
+      <div class="bars" id="sBars"></div>
+    </div>
+    <div class="cols">
+      <div class="panel">
+        <h3>Weakest keys overall</h3>
+        <div class="keychips" id="sKeys"></div>
+      </div>
+      <div class="panel">
+        <h3>Most common slips</h3>
+        <ul class="pairs" id="sPairs"></ul>
+        <h3 style="margin-top:18px">Words you miss most</h3>
+        <ul class="pairs" id="sWords"></ul>
+      </div>
+    </div>
+    <div class="panel" id="historyPanel" hidden>
+      <div class="headline"><h3>Typing history</h3><span class="sub" id="historyCount" style="margin:0"></span></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>When</th><th>Mode</th><th class="num">wpm</th><th class="num">raw</th><th class="num">acc</th><th class="num">cons</th></tr></thead>
+        <tbody id="historyBody"></tbody>
+      </table></div>
+      <div class="row" style="margin-top:12px">
+        <button type="button" class="btn small" id="historyMore" hidden>Load more</button>
+        <a class="btn small" href="/api/tests/export.csv" download>Download CSV</a>
+      </div>
+    </div>
+    <div class="row" style="margin-top:18px">
+      <button type="button" class="btn danger" id="resetBtn">Reset my stats</button>
+      <span class="empty" id="storageNote"></span>
+    </div>
+  </section>
+
+  <!-- COMMUNITY VIEW -->
+  <section id="viewCommunity" hidden>
+    <div class="community">
+      <div class="panel">
+        <h3>Comments</h3>
+        <div id="composerNotice"></div>
+        <label for="commentText" class="sub" style="display:block;margin:0 0 6px">Share a run, a tip, or a bug you found.</label>
+        <textarea id="commentText" maxlength="500" placeholder="Write a comment"></textarea>
+        <div class="composer-foot">
+          <span class="count" id="commentCount">0/500</span>
+          <button type="button" class="btn primary" id="commentBtn">Post comment</button>
+        </div>
+        <div class="err-text" id="commentErr" hidden></div>
+        <ul class="comments" id="commentList"></ul>
+      </div>
+      <div class="panel">
+        <h3>Updates</h3>
+        <div id="updatesBox"></div>
+        <div id="updateComposer" hidden class="stack" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+          <label for="updTitle" class="sub" style="margin:0">Post an update (only you see this form)</label>
+          <input id="updTitle" type="text" maxlength="80" placeholder="Title">
+          <textarea id="updBody" maxlength="400" placeholder="What changed?"></textarea>
+          <div><button type="button" class="btn primary small" id="updBtn">Post update</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOST VIEW -->
+  <section id="viewHost" hidden>
+    <div class="panel"><h3>Site overview</h3><div class="grid-cells" id="hOverview"></div></div>
+    <div class="panel">
+      <h3>Members</h3>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Name</th><th>Email</th><th class="num">Tests</th><th class="num">Best</th><th>Last test</th><th></th></tr></thead>
+        <tbody id="hUsers"></tbody>
+      </table></div>
+    </div>
+    <div class="panel" id="hDetail" hidden>
+      <h3 id="hDetailTitle"></h3>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>When</th><th>Mode</th><th class="num">wpm</th><th class="num">raw</th><th class="num">acc</th><th class="num">cons</th></tr></thead>
+        <tbody id="hDetailBody"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <div class="foot"><kbd>Tab</kbd> restarts the test. <span id="footNote">Your stats stay on this device until you sign up.</span></div>
+</div>
+<script src="/js/app.js"></script>
+</body>
+</html>
